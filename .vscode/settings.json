@@ -8,5 +8,32 @@
     "python.analysis.extraPaths": [
         "dbus-serialbattery/ext",
         "dbus-serialbattery/ext/velib_python",
+    ],
+    "chat.tools.terminal.autoApprove": {
+        "ssh": true,
+        "ping": true,
+        "/^python3 -m py_compile /Users/joschawagner/GitHub/venus-os_dbus-serialbattery-seplos/dbus-serialbattery/bms/seplosv3\\.py && echo \"SYNTAX OK\"$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "scp": true,
+        "nc": true
+    },
+    "cSpell.words": [
+        "baudrate",
+        "functioncode",
+        "mbdev",
+        "minimalmodbus",
+        "minimodbus",
+        "modbus",
+        "packval",
+        "registeraddress",
+        "RETRYCNT",
+        "Seplos",
+        "Seplosv3",
+        "serialnumber",
+        "slaveaddress",
+        "slaveaddresses",
+        "stopbits"
     ]
 }

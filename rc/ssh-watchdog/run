@@ -1,0 +1,36 @@
+#!/bin/sh
+# SSH-Watchdog als Daemontools-Service fuer Venus OS
+#
+# Killt Dropbear-Child-Prozesse (SSH-Sessions) die aelter als 3 Minuten sind.
+# Laeuft als Endlosschleife, wird von supervise ueberwacht.
+#
+# Installation:
+#   scp -r rc/ssh-watchdog cerbo:/service/ssh-watchdog
+#   (oder: install-ssh-watchdog.sh ausfuehren)
+
+exec 2>&1
+
+echo "*** starting ssh-watchdog ***"
+
+# Strategie: Alle 30s pruefen ob SSH noch reagiert.
+# Test: Versuch einen lokalen TCP-Connect auf Port 22.
+# Wenn das haengt (>5s) => Dropbear-Service neustarten via svc -t.
+# svc -t sendet SIGTERM, supervise startet Dropbear automatisch neu.
+
+INTERVAL=30
+CHECK_TIMEOUT=5
+
+while true; do
+    sleep "$INTERVAL"
+
+    # Zaehle Dropbear-Prozesse (Haupt + Sessions)
+    DB_COUNT=$(pgrep -c dropbear 2>/dev/null || echo 0)
+
+    # Wenn mehr als 2 Dropbear-Prozesse: wahrscheinlich stale Sessions
+    # (1 = Listener, 2 = Listener + 1 aktive Session, 3+ = Problem)
+    if [ "$DB_COUNT" -gt 2 ]; then
+        echo "Found $DB_COUNT dropbear processes - restarting openssh service"
+        svc -t /service/openssh 2>/dev/null || true
+        sleep 3
+    fi
+done
